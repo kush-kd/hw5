@@ -1,0 +1,379 @@
+{
+  "vibe_coder": "Claude Code (claude -p, Claude subscription)",
+  "model": "claude-opus-5-5",
+  "mcp_config": ".mcp.json",
+  "mcp_server": "campus-customs",
+  "shop_context": "You are working on the Campus Customs class project. The shop's 'today' is desk.date_today in the database, as the MCP tools report it. Use only that date; do not compare it with the computer's clock.",
+  "database": "data/campus_customs_new.db",
+  "run_at": "2026-10-10T23:10:56+00:00",
+  "all_tools_match_db": true,
+  "tests": [
+    {
+      "ticket": 101,
+      "prompt": "Using the campus-customs MCP server, check the stock for CC-TEE-WHITE in size S for ticket 101, which needs 1 unit.",
+      "mcp_server_status": "connected",
+      "tool_name": "mcp__campus-customs__check_stock",
+      "tool_input": {
+        "sku": "CC-TEE-WHITE",
+        "size": "S",
+        "qty_needed": 1
+      },
+      "tool_output": {
+        "found": true,
+        "sku": "CC-TEE-WHITE",
+        "name": "Classic Bulldog Tee",
+        "size": "S",
+        "location": "Aisle B",
+        "qty_on_hand": 0,
+        "qty_needed": 1,
+        "shortfall": 1,
+        "can_fill_from_stock": false,
+        "unit_cost": 8,
+        "list_price": 28,
+        "restock_cost_for_shortfall": 8
+      },
+      "vibe_coder_reply": "Ticket 101 can't be filled from stock. There are no CC-TEE-WHITE (Classic Bulldog Tee) shirts in size S on hand.\n\n| Field | Value |\n|---|---|\n| Location | Aisle B |\n| On hand | 0 |\n| Needed | 1 |\n| Short by | 1 |\n| Unit cost / list price | $8 / $28 |\n| Cost to restock the missing unit | $8 |\n\nRestocking that one unit would fill the order. The stock-check tool has no ticket field, so I checked by SKU, size and quantity and nothing was recorded against ticket 101.",
+      "db_check": {
+        "all_match": true,
+        "fields": [
+          {
+            "field": "name",
+            "tool_value": "Classic Bulldog Tee",
+            "db_value": "Classic Bulldog Tee",
+            "db_source": "inventory WHERE sku='CC-TEE-WHITE' AND size='S'",
+            "match": true
+          },
+          {
+            "field": "location",
+            "tool_value": "Aisle B",
+            "db_value": "Aisle B",
+            "db_source": "inventory WHERE sku='CC-TEE-WHITE' AND size='S'",
+            "match": true
+          },
+          {
+            "field": "qty_on_hand",
+            "tool_value": 0,
+            "db_value": 0,
+            "db_source": "inventory WHERE sku='CC-TEE-WHITE' AND size='S'",
+            "match": true
+          },
+          {
+            "field": "unit_cost",
+            "tool_value": 8,
+            "db_value": 8.0,
+            "db_source": "pricing WHERE sku='CC-TEE-WHITE'",
+            "match": true
+          },
+          {
+            "field": "list_price",
+            "tool_value": 28,
+            "db_value": 28.0,
+            "db_source": "pricing WHERE sku='CC-TEE-WHITE'",
+            "match": true
+          }
+        ]
+      }
+    },
+    {
+      "ticket": 103,
+      "prompt": "Using the campus-customs MCP server, check the stock for CC-HOOD-NAVY in size M for ticket 103. The Yale AI Club wants 20 of them.",
+      "mcp_server_status": "connected",
+      "tool_name": "mcp__campus-customs__check_stock",
+      "tool_input": {
+        "sku": "CC-HOOD-NAVY",
+        "size": "M",
+        "qty_needed": 20
+      },
+      "tool_output": {
+        "found": true,
+        "sku": "CC-HOOD-NAVY",
+        "name": "Basic Hoodie Big Yale",
+        "size": "M",
+        "location": "Aisle A",
+        "qty_on_hand": 8,
+        "qty_needed": 20,
+        "shortfall": 12,
+        "can_fill_from_stock": false,
+        "unit_cost": 22,
+        "list_price": 58,
+        "restock_cost_for_shortfall": 264
+      },
+      "vibe_coder_reply": "We can't fill ticket 103 (Yale AI Club, 20 \u00d7 CC-HOOD-NAVY in M) from current stock. We have 8 and need 12 more.\n\n| | |\n|---|---|\n| Item | Basic Hoodie Big Yale (CC-HOOD-NAVY), size M |\n| Location | Aisle A |\n| On hand | 8 |\n| Needed | 20 |\n| **Shortfall** | **12** |\n| Unit cost / list price | $22 / $58 |\n| Restock cost for the 12 | $264 (12 \u00d7 $22) |\n\nThe stock check doesn't take a ticket number, so this is a stock lookup only. Nothing was reserved or changed on ticket 103.\n\nYou could ship the 8 now and restock the other 12, or restock all 12 first and send the full order together. If you want, I can check the vendor's status to see how long a restock would take.",
+      "db_check": {
+        "all_match": true,
+        "fields": [
+          {
+            "field": "name",
+            "tool_value": "Basic Hoodie Big Yale",
+            "db_value": "Basic Hoodie Big Yale",
+            "db_source": "inventory WHERE sku='CC-HOOD-NAVY' AND size='M'",
+            "match": true
+          },
+          {
+            "field": "location",
+            "tool_value": "Aisle A",
+            "db_value": "Aisle A",
+            "db_source": "inventory WHERE sku='CC-HOOD-NAVY' AND size='M'",
+            "match": true
+          },
+          {
+            "field": "qty_on_hand",
+            "tool_value": 8,
+            "db_value": 8,
+            "db_source": "inventory WHERE sku='CC-HOOD-NAVY' AND size='M'",
+            "match": true
+          },
+          {
+            "field": "unit_cost",
+            "tool_value": 22,
+            "db_value": 22.0,
+            "db_source": "pricing WHERE sku='CC-HOOD-NAVY'",
+            "match": true
+          },
+          {
+            "field": "list_price",
+            "tool_value": 58,
+            "db_value": 58.0,
+            "db_source": "pricing WHERE sku='CC-HOOD-NAVY'",
+            "match": true
+          }
+        ]
+      }
+    },
+    {
+      "ticket": "101, 103",
+      "prompt": "Using the campus-customs MCP server, get the status of all vendors. Which vendor can restock the apparel for tickets 101 and 103, and will they ship right now?",
+      "mcp_server_status": "connected",
+      "tool_name": "mcp__campus-customs__get_vendor_status",
+      "tool_input": {},
+      "tool_output": {
+        "found": true,
+        "date_today": "2026-08-31",
+        "vendors": [
+          {
+            "vendor_id": 1,
+            "name": "Bulldog Print Co",
+            "specialty": "apparel reprint",
+            "lead_days": 5,
+            "eta_if_ordered_today": "2026-09-05",
+            "open_invoices": [
+              {
+                "invoice_id": 501,
+                "amount": 840,
+                "due_date": "2026-08-28",
+                "days_overdue": 3,
+                "description": "Rush reprint CC-TEE-WHITE S"
+              }
+            ],
+            "open_invoice_total": 840,
+            "will_ship_now": false
+          },
+          {
+            "vendor_id": 2,
+            "name": "Elm City Gifts",
+            "specialty": "mugs and small goods",
+            "lead_days": 3,
+            "eta_if_ordered_today": "2026-09-03",
+            "open_invoices": [],
+            "open_invoice_total": 0,
+            "will_ship_now": true
+          },
+          {
+            "vendor_id": 3,
+            "name": "QuickShip CT",
+            "specialty": "local courier",
+            "lead_days": 1,
+            "eta_if_ordered_today": "2026-09-01",
+            "open_invoices": [],
+            "open_invoice_total": 0,
+            "will_ship_now": true
+          }
+        ]
+      },
+      "vibe_coder_reply": "**Bulldog Print Co (vendor 1) is the only vendor that can restock the apparel, and it won't ship right now.**\n\nThe shop's date, `desk.date_today`, is **2026-08-31**.\n\n| Vendor | Specialty | Lead time | Open invoices | Will ship now |\n|---|---|---|---|---|\n| **Bulldog Print Co** | apparel reprint | 5 days | #501: $840, due 2026-08-28, **3 days overdue** | \u274c No |\n| Elm City Gifts | mugs and small goods | 3 days | none | \u2705 Yes |\n| QuickShip CT | local courier | 1 day | none | \u2705 Yes |\n\n**Why Bulldog won't ship:** Vendors don't ship new product while they have an unpaid invoice. Bulldog has invoice #501 for $840, an earlier rush reprint of CC-TEE-WHITE size S, and it's 3 days overdue.\n\n**What happens next:** Once #501 is paid, an order placed on 2026-08-31 would arrive around **2026-09-05**. The other two vendors can ship now, but neither makes apparel. QuickShip CT is a courier, so it could only deliver the shirts once Bulldog has made them.\n\nI didn't look at tickets 101 and 103 themselves, because these tools can't read tickets. I went by your note that they need apparel. If you give me the SKU, size and quantity for each, I can run a stock check to get the exact shortfall and what the restock would cost.",
+      "db_check": {
+        "all_match": true,
+        "fields": [
+          {
+            "field": "date_today",
+            "tool_value": "2026-08-31",
+            "db_value": "2026-08-31",
+            "db_source": "desk",
+            "match": true
+          },
+          {
+            "field": "vendor 1 name",
+            "tool_value": "Bulldog Print Co",
+            "db_value": "Bulldog Print Co",
+            "db_source": "vendors WHERE id=1",
+            "match": true
+          },
+          {
+            "field": "vendor 1 specialty",
+            "tool_value": "apparel reprint",
+            "db_value": "apparel reprint",
+            "db_source": "vendors WHERE id=1",
+            "match": true
+          },
+          {
+            "field": "vendor 1 lead_days",
+            "tool_value": 5,
+            "db_value": 5,
+            "db_source": "vendors WHERE id=1",
+            "match": true
+          },
+          {
+            "field": "vendor 1 open invoices (id, amount, due_date)",
+            "tool_value": [
+              [
+                501,
+                840,
+                "2026-08-28"
+              ]
+            ],
+            "db_value": [
+              [
+                501,
+                840.0,
+                "2026-08-28"
+              ]
+            ],
+            "db_source": "invoices WHERE vendor_id=1 AND status='open'",
+            "match": true
+          },
+          {
+            "field": "vendor 2 name",
+            "tool_value": "Elm City Gifts",
+            "db_value": "Elm City Gifts",
+            "db_source": "vendors WHERE id=2",
+            "match": true
+          },
+          {
+            "field": "vendor 2 specialty",
+            "tool_value": "mugs and small goods",
+            "db_value": "mugs and small goods",
+            "db_source": "vendors WHERE id=2",
+            "match": true
+          },
+          {
+            "field": "vendor 2 lead_days",
+            "tool_value": 3,
+            "db_value": 3,
+            "db_source": "vendors WHERE id=2",
+            "match": true
+          },
+          {
+            "field": "vendor 2 open invoices (id, amount, due_date)",
+            "tool_value": [],
+            "db_value": [],
+            "db_source": "invoices WHERE vendor_id=2 AND status='open'",
+            "match": true
+          },
+          {
+            "field": "vendor 3 name",
+            "tool_value": "QuickShip CT",
+            "db_value": "QuickShip CT",
+            "db_source": "vendors WHERE id=3",
+            "match": true
+          },
+          {
+            "field": "vendor 3 specialty",
+            "tool_value": "local courier",
+            "db_value": "local courier",
+            "db_source": "vendors WHERE id=3",
+            "match": true
+          },
+          {
+            "field": "vendor 3 lead_days",
+            "tool_value": 1,
+            "db_value": 1,
+            "db_source": "vendors WHERE id=3",
+            "match": true
+          },
+          {
+            "field": "vendor 3 open invoices (id, amount, due_date)",
+            "tool_value": [],
+            "db_value": [],
+            "db_source": "invoices WHERE vendor_id=3 AND status='open'",
+            "match": true
+          }
+        ]
+      }
+    },
+    {
+      "ticket": 102,
+      "prompt": "Using the campus-customs MCP server, look up lease 1 for ticket 102. When is the rent due, and does the checking account cover it?",
+      "mcp_server_status": "connected",
+      "tool_name": "mcp__campus-customs__get_lease_due",
+      "tool_input": {
+        "lease_id": 1,
+        "account": "checking"
+      },
+      "tool_output": {
+        "found": true,
+        "lease_id": 1,
+        "space_name": "Chapel Street shop",
+        "landlord": "Elm City Properties",
+        "monthly_rent": 2400,
+        "next_due": "2026-09-02",
+        "date_today": "2026-08-31",
+        "days_until_due": 2,
+        "is_overdue": false,
+        "notes": null,
+        "cash_account": "checking",
+        "cash_balance": 3400,
+        "cash_balance_as_of": "2026-08-31",
+        "balance_after_rent": 1000,
+        "cash_covers_rent": true
+      },
+      "vibe_coder_reply": "For ticket 102: rent on lease 1 is due **2026-09-02**, two days from now, and checking covers it.\n\n- **Lease:** Chapel Street shop, rented from Elm City Properties\n- **Monthly rent:** $2,400\n- **Status:** Not overdue. The shop's \"today\" (`desk.date_today`) is 2026-08-31.\n- **Checking balance:** $3,400 as of 2026-08-31\n- **After paying rent:** $1,000 would be left\n\nNothing has been paid yet. This lookup only checks the balance.",
+      "db_check": {
+        "all_match": true,
+        "fields": [
+          {
+            "field": "date_today",
+            "tool_value": "2026-08-31",
+            "db_value": "2026-08-31",
+            "db_source": "desk",
+            "match": true
+          },
+          {
+            "field": "space_name",
+            "tool_value": "Chapel Street shop",
+            "db_value": "Chapel Street shop",
+            "db_source": "leases WHERE id=1",
+            "match": true
+          },
+          {
+            "field": "landlord",
+            "tool_value": "Elm City Properties",
+            "db_value": "Elm City Properties",
+            "db_source": "leases WHERE id=1",
+            "match": true
+          },
+          {
+            "field": "monthly_rent",
+            "tool_value": 2400,
+            "db_value": 2400.0,
+            "db_source": "leases WHERE id=1",
+            "match": true
+          },
+          {
+            "field": "next_due",
+            "tool_value": "2026-09-02",
+            "db_value": "2026-09-02",
+            "db_source": "leases WHERE id=1",
+            "match": true
+          },
+          {
+            "field": "cash_balance",
+            "tool_value": 3400,
+            "db_value": 3400.0,
+            "db_source": "cash_accounts WHERE name='checking'",
+            "match": true
+          }
+        ]
+      }
+    }
+  ]
+}

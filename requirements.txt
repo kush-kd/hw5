@@ -1,0 +1,8 @@
+fastmcp
+pydantic-ai-slim[mcp]
+fastapi
+uvicorn[standard]
+
+# No API-key LLM client (openai, anthropic, portkey, ...) on purpose: every model call
+# goes through the Claude Code CLI (`claude -p --model claude-opus-5-5`) on the Claude
+# subscription. See backend/llm/claude_subscription.py.
