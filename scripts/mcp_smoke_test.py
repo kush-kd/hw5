@@ -62,7 +62,9 @@ TESTS = [
 def run_vibe_coder(prompt: str, tool: str) -> dict:
     """Run Claude Code headless with only this MCP tool allowed; return the call, raw output, and reply."""
     full_tool = f"mcp__{SERVER}__{tool}"
-    env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}
+    # Minimal environment (same allowlist as the agents' model bridge): no API keys, no app/session
+    # variables, so Claude Code runs only the requested model on the subscription.
+    env = {k: os.environ[k] for k in ("HOME", "PATH", "USER", "LOGNAME", "SHELL", "TMPDIR", "LANG", "LC_ALL") if k in os.environ}
     proc = subprocess.run(
         [
             "claude", "-p", prompt,
@@ -74,7 +76,7 @@ def run_vibe_coder(prompt: str, tool: str) -> dict:
         ],
         cwd=ROOT, env=env, capture_output=True, text=True, timeout=300,
     )
-    call, output, reply, server_status = None, None, None, None
+    call, output, reply, server_status, models_used = None, None, None, None, []
     for line in proc.stdout.splitlines():
         try:
             event = json.loads(line)
@@ -94,6 +96,7 @@ def run_vibe_coder(prompt: str, tool: str) -> dict:
                     output = json.loads(raw)
         elif event.get("type") == "result":
             reply = event.get("result")
+            models_used = sorted((event.get("modelUsage") or {}).keys())
     if call is None or output is None:
         raise RuntimeError(f"{tool}: no MCP tool call captured.\nstdout:\n{proc.stdout}\nstderr:\n{proc.stderr}")
     return {
@@ -102,6 +105,7 @@ def run_vibe_coder(prompt: str, tool: str) -> dict:
         "tool_input": call["input"],
         "tool_output": output,
         "vibe_coder_reply": reply,
+        "models_used": models_used,
     }
 
 
@@ -157,6 +161,19 @@ def db_checks(tool: str, out: dict) -> list[dict]:
     return checks
 
 
+def _db_state() -> dict:
+    conn = sqlite3.connect(f"file:{DB_PATH}?mode=ro", uri=True)
+    try:
+        return {
+            "date_today": conn.execute("SELECT date_today FROM desk").fetchone()[0],
+            "checking_balance": conn.execute("SELECT balance FROM cash_accounts WHERE name='checking'").fetchone()[0],
+            "payments": conn.execute("SELECT COUNT(*) FROM payments").fetchone()[0],
+            "note": "Run against the committed working copy (state after the graded full run).",
+        }
+    finally:
+        conn.close()
+
+
 def main() -> None:
     results = []
     for test in TESTS:
@@ -179,6 +196,8 @@ def main() -> None:
         "shop_context": SHOP_CONTEXT,
         "database": "data/campus_customs_new.db",
         "run_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        "database_state": _db_state(),
+        "only_model_used": all(r["models_used"] == [MODEL] for r in results),
         "all_tools_match_db": all(r["db_check"]["all_match"] for r in results),
         "tests": results,
     }, indent=2) + "\n")

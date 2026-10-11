@@ -5,7 +5,14 @@
   "mcp_server": "campus-customs",
   "shop_context": "You are working on the Campus Customs class project. The shop's 'today' is desk.date_today in the database, as the MCP tools report it. Use only that date; do not compare it with the computer's clock.",
   "database": "data/campus_customs_new.db",
-  "run_at": "2026-10-10T23:10:56+00:00",
+  "run_at": "2026-10-11T14:11:34+00:00",
+  "database_state": {
+    "date_today": "2026-08-31",
+    "checking_balance": 152.0,
+    "payments": 3,
+    "note": "Run against the committed working copy (state after the graded full run)."
+  },
+  "only_model_used": true,
   "all_tools_match_db": true,
   "tests": [
     {
@@ -32,7 +39,10 @@
         "list_price": 28,
         "restock_cost_for_shortfall": 8
       },
-      "vibe_coder_reply": "Ticket 101 can't be filled from stock. There are no CC-TEE-WHITE (Classic Bulldog Tee) shirts in size S on hand.\n\n| Field | Value |\n|---|---|\n| Location | Aisle B |\n| On hand | 0 |\n| Needed | 1 |\n| Short by | 1 |\n| Unit cost / list price | $8 / $28 |\n| Cost to restock the missing unit | $8 |\n\nRestocking that one unit would fill the order. The stock-check tool has no ticket field, so I checked by SKU, size and quantity and nothing was recorded against ticket 101.",
+      "vibe_coder_reply": "We can't fill ticket 101 from stock. There are no units of CC-TEE-WHITE in size S, and the ticket needs 1.\n\n| Field | Value |\n|---|---|\n| Item | Classic Bulldog Tee (CC-TEE-WHITE), size S |\n| Location | Aisle B |\n| On hand | 0 |\n| Needed | 1 |\n| Shortfall | 1 |\n| Unit cost / list price | $8 / $28 |\n| Cost to restock the shortfall | $8 |\n\nI only checked the stock and didn't change anything. One option is a purchase order for 1 unit, which would cost $8 against a $28 sale. Another is offering the customer a different size or color that's in stock. I can also add a note to ticket 101 or change its status if you want.",
+      "models_used": [
+        "claude-opus-5-5"
+      ],
       "db_check": {
         "all_match": true,
         "fields": [
@@ -98,7 +108,10 @@
         "list_price": 58,
         "restock_cost_for_shortfall": 264
       },
-      "vibe_coder_reply": "We can't fill ticket 103 (Yale AI Club, 20 \u00d7 CC-HOOD-NAVY in M) from current stock. We have 8 and need 12 more.\n\n| | |\n|---|---|\n| Item | Basic Hoodie Big Yale (CC-HOOD-NAVY), size M |\n| Location | Aisle A |\n| On hand | 8 |\n| Needed | 20 |\n| **Shortfall** | **12** |\n| Unit cost / list price | $22 / $58 |\n| Restock cost for the 12 | $264 (12 \u00d7 $22) |\n\nThe stock check doesn't take a ticket number, so this is a stock lookup only. Nothing was reserved or changed on ticket 103.\n\nYou could ship the 8 now and restock the other 12, or restock all 12 first and send the full order together. If you want, I can check the vendor's status to see how long a restock would take.",
+      "vibe_coder_reply": "We don't have enough stock to fill ticket 103 from the shelf. There are 8 on hand and the Yale AI Club wants 20, so we're 12 short.\n\n| Field | Value |\n|---|---|\n| Item | Basic Hoodie Big Yale (CC-HOOD-NAVY), size M |\n| Location | Aisle A |\n| On hand | 8 |\n| Needed | 20 |\n| Shortfall | **12** |\n| Unit cost / list price | $22 / $58 |\n| Cost to restock the 12 | $264 (12 \u00d7 $22) |\n\nI also tried to open ticket 103 to confirm its details and see any work already done on it, but permission for `get_ticket` wasn't granted, so I haven't seen the ticket itself.\n\nTo fill the order, we could either create a purchase order for the 12 missing hoodies ($264) or send the 8 now and the rest later. I haven't written anything to the ticket or created a purchase order. If you allow `get_ticket`, I can check the ticket first and then take whichever of those next steps you want.",
+      "models_used": [
+        "claude-opus-5-5"
+      ],
       "db_check": {
         "all_match": true,
         "fields": [
@@ -156,17 +169,9 @@
             "specialty": "apparel reprint",
             "lead_days": 5,
             "eta_if_ordered_today": "2026-09-05",
-            "open_invoices": [
-              {
-                "invoice_id": 501,
-                "amount": 840,
-                "due_date": "2026-08-28",
-                "days_overdue": 3,
-                "description": "Rush reprint CC-TEE-WHITE S"
-              }
-            ],
-            "open_invoice_total": 840,
-            "will_ship_now": false
+            "open_invoices": [],
+            "open_invoice_total": 0,
+            "will_ship_now": true
           },
           {
             "vendor_id": 2,
@@ -190,7 +195,10 @@
           }
         ]
       },
-      "vibe_coder_reply": "**Bulldog Print Co (vendor 1) is the only vendor that can restock the apparel, and it won't ship right now.**\n\nThe shop's date, `desk.date_today`, is **2026-08-31**.\n\n| Vendor | Specialty | Lead time | Open invoices | Will ship now |\n|---|---|---|---|---|\n| **Bulldog Print Co** | apparel reprint | 5 days | #501: $840, due 2026-08-28, **3 days overdue** | \u274c No |\n| Elm City Gifts | mugs and small goods | 3 days | none | \u2705 Yes |\n| QuickShip CT | local courier | 1 day | none | \u2705 Yes |\n\n**Why Bulldog won't ship:** Vendors don't ship new product while they have an unpaid invoice. Bulldog has invoice #501 for $840, an earlier rush reprint of CC-TEE-WHITE size S, and it's 3 days overdue.\n\n**What happens next:** Once #501 is paid, an order placed on 2026-08-31 would arrive around **2026-09-05**. The other two vendors can ship now, but neither makes apparel. QuickShip CT is a courier, so it could only deliver the shirts once Bulldog has made them.\n\nI didn't look at tickets 101 and 103 themselves, because these tools can't read tickets. I went by your note that they need apparel. If you give me the SKU, size and quantity for each, I can run a stock check to get the exact shortfall and what the restock would cost.",
+      "vibe_coder_reply": "**Bulldog Print Co (vendor 1)** can restock the apparel, and it will ship right now. It has no open invoices, and the shop doesn't block shipping unless a vendor has an unpaid invoice.\n\nVendor status, as of the shop's date of **2026-08-31**:\n\n| Vendor | Specialty | Lead time | ETA if ordered today | Open invoices | Will ship now |\n|---|---|---|---|---|---|\n| **1 \u2013 Bulldog Print Co** | **apparel reprint** | 5 days | **2026-09-05** | none ($0) | **Yes** |\n| 2 \u2013 Elm City Gifts | mugs and small goods | 3 days | 2026-09-03 | none ($0) | Yes |\n| 3 \u2013 QuickShip CT | local courier | 1 day | 2026-09-01 | none ($0) | Yes |\n\nBulldog Print Co is the only vendor that does apparel. If you order today, it should arrive around **2026-09-05**.\n\nI couldn't open tickets 101 and 103 because permission to read tickets was denied. So I haven't confirmed which items they need, how many, or whether they have deadlines that a September 5 arrival would miss. If you allow ticket access, I can check that and create the purchase orders.",
+      "models_used": [
+        "claude-opus-5-5"
+      ],
       "db_check": {
         "all_match": true,
         "fields": [
@@ -224,20 +232,8 @@
           },
           {
             "field": "vendor 1 open invoices (id, amount, due_date)",
-            "tool_value": [
-              [
-                501,
-                840,
-                "2026-08-28"
-              ]
-            ],
-            "db_value": [
-              [
-                501,
-                840.0,
-                "2026-08-28"
-              ]
-            ],
+            "tool_value": [],
+            "db_value": [],
             "db_source": "invoices WHERE vendor_id=1 AND status='open'",
             "match": true
           },
@@ -306,8 +302,7 @@
       "mcp_server_status": "connected",
       "tool_name": "mcp__campus-customs__get_lease_due",
       "tool_input": {
-        "lease_id": 1,
-        "account": "checking"
+        "lease_id": 1
       },
       "tool_output": {
         "found": true,
@@ -315,18 +310,21 @@
         "space_name": "Chapel Street shop",
         "landlord": "Elm City Properties",
         "monthly_rent": 2400,
-        "next_due": "2026-09-02",
+        "next_due": "2026-10-02",
         "date_today": "2026-08-31",
-        "days_until_due": 2,
+        "days_until_due": 32,
         "is_overdue": false,
         "notes": null,
         "cash_account": "checking",
-        "cash_balance": 3400,
+        "cash_balance": 152,
         "cash_balance_as_of": "2026-08-31",
-        "balance_after_rent": 1000,
-        "cash_covers_rent": true
+        "balance_after_rent": -2248,
+        "cash_covers_rent": false
       },
-      "vibe_coder_reply": "For ticket 102: rent on lease 1 is due **2026-09-02**, two days from now, and checking covers it.\n\n- **Lease:** Chapel Street shop, rented from Elm City Properties\n- **Monthly rent:** $2,400\n- **Status:** Not overdue. The shop's \"today\" (`desk.date_today`) is 2026-08-31.\n- **Checking balance:** $3,400 as of 2026-08-31\n- **After paying rent:** $1,000 would be left\n\nNothing has been paid yet. This lookup only checks the balance.",
+      "vibe_coder_reply": "Rent on lease 1 is due **2026-10-02**, and **the checking account does not cover it**: it's $2,248 short.\n\n| | |\n|---|---|\n| Space | Chapel Street shop (landlord: Elm City Properties) |\n| Monthly rent | $2,400 |\n| Next due | 2026-10-02 |\n| Shop's today (`desk.date_today`) | 2026-08-31, so rent is **due in 32 days**, not overdue |\n| Checking balance (as of 2026-08-31) | $152 |\n| Balance after paying rent | **\u2212$2,248** |\n\nThese figures come from `get_lease_due`, which only looks up the numbers and doesn't pay anything.\n\nYou declined the other two calls, so I didn't retry them. Because of that, two things are unchecked:\n- **Ticket 102:** I haven't confirmed that it links to lease 1 or seen what work is already recorded on it.\n- **Cash position:** I haven't seen whether other payments are already waiting for approval. Those would make the shortfall bigger than $2,248.\n\nIf you allow those calls, I can finish both checks.",
+      "models_used": [
+        "claude-opus-5-5"
+      ],
       "db_check": {
         "all_match": true,
         "fields": [
@@ -360,15 +358,15 @@
           },
           {
             "field": "next_due",
-            "tool_value": "2026-09-02",
-            "db_value": "2026-09-02",
+            "tool_value": "2026-10-02",
+            "db_value": "2026-10-02",
             "db_source": "leases WHERE id=1",
             "match": true
           },
           {
             "field": "cash_balance",
-            "tool_value": 3400,
-            "db_value": 3400.0,
+            "tool_value": 152,
+            "db_value": 152.0,
             "db_source": "cash_accounts WHERE name='checking'",
             "match": true
           }

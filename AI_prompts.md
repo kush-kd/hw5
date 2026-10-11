@@ -57,7 +57,7 @@ Write an MCP server in `mcp_server/` using FastMCP. It talks to `data/campus_cus
 **Prompt:**
 In the vibe coder, add our MCP server to this project so the vibe coder can call the tools. Save the connection JSON in `.mcp.json` at the project root, or wherever the vibe coder saves its local MCP server list. Then, with the vibe coder connected, test each of the three MCP tools. Save the evidence in `output/mcp_smoke.json`. For each tool, include the prompt I asked the vibe coder, the tool name, and the tool output, which must match the values in `data/campus_customs_new.db`.
 
-**Follow-up:** None needed.
+**Follow-up:** "Why are you comparing the shop's today to the computer's real date? Did the instructions ask for that?" Then: "This was the initial instruction. Did you not pay attention?" (with a screenshot of the `desk.date_today` rule). What was missing after the first prompt: the MCP tools already used `desk.date_today`, but the Claude Code session answering the smoke-test prompts wasn't told that rule. It compared the shop date with its own system date and added a confusing warning. The smoke test now gives every run the shop rule as context, so the replies use only 2026-08-31.
 
 ## Problem 5: Build the agent team and grow the MCP tools
 

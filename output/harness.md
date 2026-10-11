@@ -196,14 +196,14 @@ Claude Code starts the server over stdio from the project root. Its tools show u
 
 **Smoke test:** `scripts/mcp_smoke_test.py` writes the evidence to `output/mcp_smoke.json`. It sends each test prompt to Claude Code (`claude -p`, Opus 5.5 on the subscription) with `.mcp.json` loaded and only the tool under test allowed. Each run also gets one line of shop context (`shop_context` in the JSON): "today" is `desk.date_today`, not the computer's clock, as the shop rules say. From the stream it records the tool name, the tool input, the raw tool output, and Claude Code's reply. It then re-reads the same fields directly from `data/campus_customs_new.db` (read-only) and checks each one.
 
-| Test | Tool | Key output | Matches DB |
+| Test | Tool | Key output (committed working DB, after the graded run) | Matches DB |
 |---|---|---|---|
 | Ticket 101 | `check_stock` | CC-TEE-WHITE size S: 0 on hand, short 1, $8 cost / $28 list | ✓ |
 | Ticket 103 | `check_stock` | CC-HOOD-NAVY size M: 8 on hand of 20, short 12, $264 to restock | ✓ |
-| Tickets 101, 103 | `get_vendor_status` | Bulldog Print Co blocked by open invoice #501 ($840, 3 days overdue); ETA 2026-09-05 once paid | ✓ |
-| Ticket 102 | `get_lease_due` | Lease 1: $2,400 due 2026-09-02 (2 days away); checking $3,400 covers it | ✓ |
+| Tickets 101, 103 | `get_vendor_status` | Bulldog Print Co has **no** open invoices (#501 paid by the human), so `will_ship_now` is true; ETA if ordered today 2026-09-05 | ✓ |
+| Ticket 102 | `get_lease_due` | Lease 1: $2,400, next due **2026-10-02** (moved after the rent payment); checking **$152** does not cover it | ✓ |
 
-`all_tools_match_db: true`. The database checksum was the same before and after the run.
+`all_tools_match_db: true` and `only_model_used: true`: every smoke call used only `claude-opus-5-5`, which the CLI's `modelUsage` confirms. The smoke test was first run in Problem 4 on the fresh database (Bulldog Print Co blocked, rent due 2026-09-02, $3,400). It was **re-run after the graded full run** so the evidence matches the `data/campus_customs_new.db` committed to the repo. Like the agents, the smoke script now gives Claude Code only a minimal allowlist of environment variables.
 
 ## Problem 5: The agent team and the grown MCP server
 
