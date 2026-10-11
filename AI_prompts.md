@@ -138,3 +138,17 @@ Open `output/desk_tickets.html` and fill in the Reflections tab. Answer in my ow
 Tie every answer to this app and the three tickets we ran, using the ticket tabs and the Cash tab on the same page as evidence. Generic AI essays without Campus Customs details score low, so be as detailed, clear and thorough as possible.
 
 **Follow-up:** None needed.
+
+## Problem 11: Submit to GitHub
+
+**Prompt:**
+Push the code to a public GitHub repository so graders can clone it. I'll submit the repo URL to Canvas; also put it in `output/github_url.txt`. Don't push my real `.env` to the repo. Do include both database files under `data/` (the original and the working copy) so graders can run the app easily. Follow the expected file layout. The README should explain how to:
+- copy the original DB to the working copy when you need a clean run
+- start the MCP server
+- start the FastAPI backend
+- start the React board
+- reset the DB before a full three-ticket run
+
+I already have other work on my GitHub, so push this in a way that adds a separate repo with its own link and doesn't delete or overwrite anything.
+
+**Follow-up:** None needed.
